@@ -13,3 +13,6 @@ app.listen(PORT, (error) =>{
 );
 
 app.use(cors())
+
+const { connectDB } = require('./mongodb')
+connectDB()
