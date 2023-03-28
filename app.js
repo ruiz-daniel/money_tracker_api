@@ -3,6 +3,12 @@ require('dotenv').config({ path: './.env' })
 const cors = require('cors')
 const app = express();
 const PORT = 3002;
+const createError = require('http-errors')
+
+const usersRouter = require('./routes/users')
+// app.use('/users', usersRouter)
+
+
   
 app.listen(PORT, (error) =>{
     if(!error)
@@ -13,6 +19,12 @@ app.listen(PORT, (error) =>{
 );
 
 app.use(cors())
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+
+app.use('/users', usersRouter)
+
+
 
 const { connectDB } = require('./mongodb')
 connectDB()
