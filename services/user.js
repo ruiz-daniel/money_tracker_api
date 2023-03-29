@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const userModel = require('../models/user')
+const accountService = require('./account')
 
 const crypto = require('crypto')
 const jwt = require('jsonwebtoken')
@@ -10,7 +11,7 @@ const jwt = require('jsonwebtoken')
  */
 module.exports.handler = {
   async get() {
-    const result = await userModel.find({}, { password: 0 })
+    const result = await userModel.find({}, { password: 0 }).populate('accounts')
     return result
   },
   async getById(userid) {
@@ -56,7 +57,7 @@ module.exports.handler = {
   },
   async update(user) {
     let result = await userModel
-      .findByIdAndUpdate(user, user, { new: true })
+      .findByIdAndUpdate(user._id, user, { new: true })
       .catch((error) => {
         if (error.keyValue?.username) {
           throw new Error('Username already exists')
@@ -64,6 +65,17 @@ module.exports.handler = {
       })
     if (!result?._id) {
       throw new Error('User not found')
+    }
+    return result
+  },
+  async addUserAccount(user, account) {
+    let result
+    account = await accountService.handler.create(account).catch(error => {
+      throw new Error(error)
+    })
+    if (account._id) {
+      user.accounts.push(account._id)
+      result = await this.update(user)
     }
     return result
   },

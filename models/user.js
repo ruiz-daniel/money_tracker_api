@@ -9,6 +9,7 @@ const userSchema = new Schema({
   profile_picture: String,
   password: { type: String, required: true, virtual: true },
   disabled: { type: Boolean, default: false },
+  accounts: [{ type: Schema.Types.ObjectId, ref: 'account' }]
 })
 
 userSchema.methods.toJSON = function () {

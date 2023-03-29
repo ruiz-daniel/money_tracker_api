@@ -43,6 +43,14 @@ exports.update = async (req, res, next) => {
   res.send(response)
 }
 
+exports.addAccount = async (req, res, next) => {
+  const response = await userService.handler.addUserAccount(req.body.user, req.body.account).catch((error) => {
+    res.status(400)
+    return error.message
+  })
+  res.send(response)
+}
+
 exports.delete = async (req, res, next) => {
   const response = await userService.handler
     .delete(req.params.id)

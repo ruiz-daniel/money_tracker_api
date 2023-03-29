@@ -7,6 +7,7 @@ router.get('/', userController.getUsers)
 router.get('/:id', userController.getUser)
 router.post('/login', userController.login)
 router.post('/', userController.register)
+router.post('/account', userController.addAccount)
 router.patch('/', userController.update)
 router.delete('/:id', userController.delete)
 
