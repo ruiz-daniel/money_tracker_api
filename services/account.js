@@ -41,14 +41,57 @@ module.exports.handler = {
     let account = await this.getById(accountId).catch((error) => {
       throw new Error(error)
     })
-    transaction = await transactionService.handler.create(transaction).catch((error) => {
-      throw new Error(error)
-    })
+    transaction = await transactionService.handler
+      .create(transaction)
+      .catch((error) => {
+        throw new Error(error)
+      })
     if (transaction._id) {
       account.transactions.push(transaction._id)
-      transaction.type === "increase" ? account.balance += transaction.amount : account.balance -= transaction.amount
+      addTransactionAmount(account, transaction)
       result = await this.update(account)
     }
+    return result
+  },
+  async changeTransaction(accountId, transaction) {
+    let result
+    let account = await this.getById(accountId).catch((error) => {
+      throw new Error(error)
+    })
+    let oldTransaction = await transactionService.handler
+      .getById(transaction._id)
+      .catch((error) => {
+        throw new Error(error)
+      })
+    if (oldTransaction._id) {
+      removeTransactionAmount(account, oldTransaction)
+    }
+    await transactionService.handler.update(transaction).catch((error) => {
+      throw new Error(error)
+    })
+    addTransactionAmount(account, transaction)
+    result = await this.update(account)
+
+    return result
+  },
+  async deleteTransaction(accountId, transactionId) {
+    let result
+    let account = await this.getById(accountId).catch((error) => {
+      throw new Error(error)
+    })
+    let transaction = await transactionService.handler
+      .getById(transactionId)
+      .catch((error) => {
+        throw new Error(error)
+      })
+    if (transaction._id) {
+      removeTransactionAmount(account, transaction)
+      await transactionService.handler.delete(transactionId).catch((error) => {
+        throw new Error(error)
+      })
+      result = await this.update(account)
+    }
+
     return result
   },
   async delete(id) {
@@ -57,4 +100,15 @@ module.exports.handler = {
     })
     return result
   },
+}
+
+const addTransactionAmount = function (account, transaction) {
+  transaction.type === 'increase'
+    ? (account.balance += transaction.amount)
+    : (account.balance -= transaction.amount)
+}
+const removeTransactionAmount = function (account, transaction) {
+  transaction.type === 'increase'
+    ? (account.balance -= transaction.amount)
+    : (account.balance += transaction.amount)
 }

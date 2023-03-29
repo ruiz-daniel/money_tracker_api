@@ -26,6 +26,22 @@ exports.addTransaction = async (req, res, next) => {
   res.send(response)
 }
 
+exports.changeTransaction = async (req, res, next) => {
+  const response = await accountService.handler.changeTransaction(req.params.id, req.body).catch((error) => {
+    res.status(400)
+    return error.message
+  })
+  res.send(response)
+}
+
+exports.deleteTransaction = async (req, res, next) => {
+  const response = await accountService.handler.deleteTransaction(req.params.id, req.params.transactionID).catch((error) => {
+    res.status(400)
+    return error.message
+  })
+  res.send(response)
+}
+
 exports.delete = async (req, res, next) => {
   const response = await accountService.handler
     .delete(req.params.id)
