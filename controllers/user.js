@@ -44,7 +44,7 @@ exports.update = async (req, res, next) => {
 }
 
 exports.addAccount = async (req, res, next) => {
-  const response = await userService.handler.addUserAccount(req.body.user, req.body.account).catch((error) => {
+  const response = await userService.handler.addUserAccount(req.params.id, req.body).catch((error) => {
     res.status(400)
     return error.message
   })

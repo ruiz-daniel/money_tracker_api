@@ -11,13 +11,18 @@ const jwt = require('jsonwebtoken')
  */
 module.exports.handler = {
   async get() {
-    const result = await userModel.find({}, { password: 0 }).populate('accounts')
+    const result = await userModel
+      .find({}, { password: 0 })
+      .populate('accounts')
     return result
   },
   async getById(userid) {
-    const result = await userModel.findById(userid).catch((error) => {
-      throw new Error('User not found')
-    })
+    const result = await userModel
+      .findById(userid)
+      .populate('accounts')
+      .catch((error) => {
+        throw new Error('User not found')
+      })
     return result
   },
   async login(username, password) {
@@ -29,6 +34,7 @@ module.exports.handler = {
         },
         { password: 0 },
       )
+      .populate('accounts')
       .catch((error) => {
         throw new Error('Invalid username or password')
       })
@@ -58,6 +64,7 @@ module.exports.handler = {
   async update(user) {
     let result = await userModel
       .findByIdAndUpdate(user._id, user, { new: true })
+      .populate('accounts')
       .catch((error) => {
         if (error.keyValue?.username) {
           throw new Error('Username already exists')
@@ -68,9 +75,12 @@ module.exports.handler = {
     }
     return result
   },
-  async addUserAccount(user, account) {
+  async addUserAccount(userid, account) {
     let result
-    account = await accountService.handler.create(account).catch(error => {
+    let user = await this.getById(userid).catch((error) => {
+      throw new Error(error)
+    })
+    account = await accountService.handler.create(account).catch((error) => {
       throw new Error(error)
     })
     if (account._id) {

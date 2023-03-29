@@ -12,6 +12,14 @@ module.exports.handler = {
     })
     return result
   },
+  async getById(id) {
+    const result = await accountModel
+      .findById(id)
+      .catch((error) => {
+        throw new Error('Account not found')
+      })
+    return result
+  },
   async update(account) {
     let result = await accountModel
       .findByIdAndUpdate(account._id, account, { new: true })

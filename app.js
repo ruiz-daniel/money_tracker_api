@@ -6,7 +6,7 @@ const PORT = 3002;
 const createError = require('http-errors')
 
 const usersRouter = require('./routes/users')
-// app.use('/users', usersRouter)
+const accountsRouter = require('./routes/accounts')
 
 
   
@@ -23,6 +23,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
 app.use('/users', usersRouter)
+app.use('/account', accountsRouter)
 
 
 
